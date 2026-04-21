@@ -119,7 +119,7 @@ template< class T >
 std::pair< size_t, BiTree<T>* > fall_left(BiTree<T>* root)
 {
   size_t path = 0;
-  while (root->lt) {
+  while (root->left) {
     root = root->left;
     path++;
   }
@@ -129,9 +129,12 @@ std::pair< size_t, BiTree<T>* > fall_left(BiTree<T>* root)
 template< class T >
 std::pair< size_t, BiTree<T>* > parent(BiTree<T>* root)
 {
+  if (!root) {
+    return {0, nullptr};
+  }
   size_t path = 0;
   BiTree<T> parent = root->parent;
-  while (parent && parent->lt != root) {
+  while (parent && parent->left != root) {
     root = parent;
     parent = root->parent;
     path++;
@@ -142,14 +145,31 @@ std::pair< size_t, BiTree<T>* > parent(BiTree<T>* root)
 template< class T >
 std::tuple< Direction, size_t, BiTree< T >* > nextStruct(BiTree<T>* root)
 {
-
-
+  if (root->rt) {
+    auto res = fall_left(root->rt);
+    return {Direction::fall_left, res.first, res.second};
+  }
+  auto res = parent(root);
+  return {Direction::parent, res.first, res.second};
 }
 
 template< class T >
 bool isEqualStruct(BiTree< T >* lhs, BiTree< T >* rhs)
 {
-
+  auto lhs_begin = fall_left(lhs);
+  auto rhs_begin = fall_left(rhs);
+  if (lhs_begin.first != rhs_begin.first) {
+    return false;
+  }
+  auto ln = nextStruct(lhs_begin.second);
+  auto rn = nextStruct(rhs_begin.second);
+  while (std::get< 0 >(ln) == std::get< 0 >(rn) &&
+        std::get< 1 >(ln) == std::get< 1 >(rn) &&
+        std::get< 2 >(ln) && std::get< 2 >(rn)) {
+    ln = nextStruct(std::get< 2 >(ln));
+    rn = nextStruct(std::get< 2 >(rn));
+  }
+  return ln == rn;
 }
 
 
