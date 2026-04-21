@@ -35,29 +35,6 @@ BiTree< T >* maximum(BiTree< T >* root)
   return root;
 }
 
-template< class T, class F >
-F traverse(BiTree< T >* root, F f)
-{
-  if (!root) {
-    return f;
-  }
-  BiTree< T >* next = minimum(root);
-  while (next) {
-    f(next->val);
-    if (next->rt) {
-      next = next->rt;
-      next = minimum(next);
-    } else {
-      BiTree<T> parent = next->parent;
-      while (parent && parent->lt != next) {
-        next = parent;
-        parent = next->parent;
-      }
-      next = parent;
-    }
-  }
-}
-
 template< class T >
 T& value(BiTreeIt<T> it)
 {
@@ -112,7 +89,68 @@ bool hasPrev(BiTreeIt<T> it)
   return prev(it).curr;
 }
 
+enum class Direction {
+  fall_left,
+  parent
+};
 
+template< class T >
+BiTree<T> nextAssigned(BiTree< T >* root)
+{
+  if (!root) {
+    return nullptr;
+  }
+  BiTree< T >* next = minimum(root);
+  if (next->rt) {
+    next = next->rt;
+    next = minimum(next);
+  } else {
+    BiTree<T> parent = next->parent;
+    while (parent && parent->lt != next) {
+      next = parent;
+      parent = next->parent;
+    }
+    next = parent;
+  }
+  return next;
+}
+
+template< class T >
+std::pair< size_t, BiTree<T>* > fall_left(BiTree<T>* root)
+{
+  size_t path = 0;
+  while (root->lt) {
+    root = root->left;
+    path++;
+  }
+  return {path, root};
+}
+
+template< class T >
+std::pair< size_t, BiTree<T>* > parent(BiTree<T>* root)
+{
+  size_t path = 0;
+  BiTree<T> parent = root->parent;
+  while (parent && parent->lt != root) {
+    root = parent;
+    parent = root->parent;
+    path++;
+  }
+  return {path, parent};
+}
+
+template< class T >
+std::tuple< Direction, size_t, BiTree< T >* > nextStruct(BiTree<T>* root)
+{
+
+
+}
+
+template< class T >
+bool isEqualStruct(BiTree< T >* lhs, BiTree< T >* rhs)
+{
+
+}
 
 
 
