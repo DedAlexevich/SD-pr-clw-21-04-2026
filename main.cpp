@@ -252,14 +252,14 @@ InclusionIt<T> begin(BiTree<T>* lhs, BiTree<T>* pattern)
   return inclusion(lhs, pattern);
 }
 
-template<class T>
-BiTree<T>* subtree_end(BiTree<T>* first, BiTree<T>* last_lhs_next) {
+template< class T>
+BiTree<T>* subtree_end(BiTree< T >* first, BiTree< T >* last_lhs_next) {
   if (!last_lhs_next) {
-    BiTree<T>* root = first;
+    BiTree< T >* root = first;
     while (root->parent) {
       root = root->parent;
     }
-    BiTree<T>* end = root;
+    BiTree< T >* end = root;
     while (end->rt) {
       end = end->rt;
     }
@@ -269,7 +269,7 @@ BiTree<T>* subtree_end(BiTree<T>* first, BiTree<T>* last_lhs_next) {
 }
 
 template< class T >
-InclusionIt<T> next(InclusionIt<T> curr, BiTree< T >* pattern)
+InclusionIt< T > next(InclusionIt< T > curr, BiTree< T >* pattern)
 {
   BiTree< T >* lhs_curr = std::get< 2 >(nextStruct(curr.incl.first));
   while (lhs_curr) {
@@ -284,12 +284,10 @@ InclusionIt<T> next(InclusionIt<T> curr, BiTree< T >* pattern)
 }
 
 template< class T >
-bool hasNext(InclusionIt<T> curr, BiTree< T >* pattern)
+bool hasNext(InclusionIt< T > curr, BiTree< T >* pattern)
 {
   return next(curr, pattern).incl.first != nullptr;
 }
-
-
 
 int main()
 {
