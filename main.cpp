@@ -224,7 +224,7 @@ std::pair< BiTree<T>*, BiTree<T>* > inclusion(BiTree<T>* lhs, BiTree<T>* pattern
 {
   BiTree< T >* lhs_curr = fall_left(lhs).second;
   while (lhs_curr) {
-    auto result = isEqualStructStart(lhs_curr, fallLeft(pattern).second);
+    auto result = isEqualStructStart(lhs_curr, fall_left(pattern).second);
     if (!std::get< 1 >(result) && std::get< 2 >(result)) {
       BiTree< T >* last_lhs_next = std::get< 0 >(result);
       if (!last_lhs_next) {
@@ -239,20 +239,55 @@ std::pair< BiTree<T>*, BiTree<T>* > inclusion(BiTree<T>* lhs, BiTree<T>* pattern
     }
     lhs_curr = nextStruct(lhs_curr).second;
   }
-  return false;
+  return {nullptr, nullptr};
 }
 
-template< class T > struct InclusionIt {
+template< class T >
+struct InclusionIt {
   std::pair< BiTree<T>*, BiTree<T>* > incl;
 };
 template< class T >
-InclusionIt<T> begin(BiTree<T>* lhs, BiTree<T>* pattern);
+InclusionIt<T> begin(BiTree<T>* lhs, BiTree<T>* pattern)
+{
+  return inclusion(lhs, pattern);
+}
+
+template<class T>
+BiTree<T>* subtree_end(BiTree<T>* first, BiTree<T>* last_lhs_next) {
+  if (!last_lhs_next) {
+    BiTree<T>* root = first;
+    while (root->parent) {
+      root = root->parent;
+    }
+    BiTree<T>* end = root;
+    while (end->rt) {
+      end = end->rt;
+    }
+    return end;
+  }
+  return prev({last_lhs_next}).curr;
+}
 
 template< class T >
-InclusionIt<T> next(InclusionIt<T> curr, BiTree< T >* pattern);
+InclusionIt<T> next(InclusionIt<T> curr, BiTree< T >* pattern)
+{
+  BiTree< T >* lhs_curr = std::get< 2 >(nextStruct(curr.incl.first));
+  while (lhs_curr) {
+    auto result = isEqualStructStart(lhs_curr, fall_left(pattern).second);
+    if (!std::get< 1 >(result) && std::get< 2 >(result)) {
+      BiTree< T >* lhs_end = subtree_end(lhs_curr, std::get< 0 >(result));
+      return {lhs_curr, lhs_end};
+    }
+    lhs_curr = nextStruct(lhs_curr).second;
+  }
+  return {nullptr, nullptr};
+}
 
 template< class T >
-bool hasNext(InclusionIt<T> curr, BiTree< T >* pattern);
+bool hasNext(InclusionIt<T> curr, BiTree< T >* pattern)
+{
+  return next(curr, pattern).incl.first != nullptr;
+}
 
 
 
